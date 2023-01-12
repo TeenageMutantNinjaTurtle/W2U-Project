@@ -3,12 +3,13 @@ rom_code 		:= IRDO
 
 # Directory configuration
 build_dir 		:= build
-code_build_dir  = $(build_dir)/code
-asm_build 	    = $(code_build_dir)/asm
-c_build 	    = $(code_build_dir)/c
-src_dir         = src
+code_build_dir  =  $(build_dir)/code
+asm_build 	    =  $(code_build_dir)/asm
+c_build 	    =  $(code_build_dir)/c
+src_dir         =  src
 asm_src_dir		:= $(src_dir)/asm
 c_src_dir		:= $(src_dir)/c
+incl_dir 		:= include
 
 game_base       := $(build_dir)/$(rom_code)
 exefs 	        := $(game_base)/exefs
@@ -26,6 +27,9 @@ armips    		:= armips
 blz 			:= tools/blz/blz
 gcc 	  		:= arm-none-eabi-gcc
 ndstool   		:= ndstool
+
+# Flags
+CFLAGS = -mthumb -mno-thumb-interwork -march=armv5t -mno-long-calls -Wall -Wextra -Os -fira-loop-pressure -fipa-pta
 
 .PHONY: clean all make_tools
 
@@ -47,9 +51,9 @@ $(asm_build)/%.d : $(asm_src_dir)/%.s
 	$(AS) $(ASFLAGS) -c $< -o $@
 
 $(c_build)/%.o : $(c_src_dir)/%.c
-	mkdir -p  $(c_src_dir)
+	mkdir -p  $(c_build)
 	@ echo -e "Compiling"
-	$(gcc) $(CFLAGS) -c $< -o $@
+	$(gcc) $(CFLAGS) -I$(incl_dir) -c $< -o $@
 
 make_tools:
 	gcc -o tools/blz/blz tools/blz/blz.c
