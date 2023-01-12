@@ -32,7 +32,7 @@ ndstool   		:= ndstool
 all: $(project).nds 
 
 $(project).nds: $(objs) $(game_base) make_narcs
-	# $(armips) $(src_dir)/Hooks.s
+	$(armips) $(src_dir)/Hooks.s
 	$(armips) $(src_dir)/ARM9OVT.s
 	$(ndstool) -c $@ -9 $(exefs)/ARM9.bin -7 $(exefs)/ARM7.bin -y9 $(exefs)/ARM9OVT.bin -y7 $(exefs)/ARM7OVT.bin -d $(romfs) -y $(exefs)/overlay -t $(exefs)/banner.bin -h $(exefs)/header.bin
 

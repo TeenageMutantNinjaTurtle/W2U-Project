@@ -18,8 +18,8 @@ for NARC in NARCs:
     ARCPath = Path(*NARC.parts[3:])
     P = BuildDir / 'narcs' / ARCPath
     P.mkdir(parents=True, exist_ok=True)
-    subprocess.run(['tools/knarc/knarc', '-d', P, '-u', NARCPath])
+    subprocess.run(['tools/knarc/knarc', '-d', P, '-u', NARC])
     DataPath = 'data' / ARCPath
     for x in DataPath.glob('*'):
         shutil.copy(x, P / f'{DataPath.stem}_{str(x.stem).zfill(8)}.bin')
-    subprocess.run(['tools/knarc/knarc', '-d', P, '-p', NARCPath])
+    subprocess.run(['tools/knarc/knarc', '-d', P, '-p', NARC])
