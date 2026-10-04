@@ -38,7 +38,7 @@ Battle logging repurposes Wi-Fi/Pal Pad save blocks. Back up saves and read the
 | PWAN graphics | Overlay-scoped Summary, Battle, Misc, and Trainer DLLs | Separate B2 builds with B2-specific hooks |
 
 The [battle registry](src/pokeweb_gameplay/battle_modules/registry.json) currently
-defines **22 groups**, with 59 managed ability entries, 101 move entries,
+defines **23 groups**, with 62 managed ability entries, 101 move entries,
 13 item entries, and subordinate field/side/position handlers. These are managed
 registrations, including updates to some vanilla mechanics—not total coverage
 counts. The registry generates the resident lookup, child API tables, Meson
