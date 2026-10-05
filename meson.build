@@ -170,6 +170,7 @@ rom = custom_target('White2Upgrade.nds',
     pmc_symbols
   ],
   depend_files: [patch_arm9_footer_py, rom_layout_finalizer_py],
+  depends: [w2u_battle_heap_audit],             # the PMC heap guard (src/meson.build)
   command: ['sh', '-eu', '-c',
     '"${JAVA:-java}" "-Xmx$6" -cp "$1" ctrmap.cli.ROMBuilder --input "$2" --output "$3"; python3 "$4" --rom "$3" --arm9 "$5"; python3 "$7" --rom "$3"',
     'rombuilder',
