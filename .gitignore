@@ -1,5 +1,7 @@
 build
 build-stripped
+build-unstripped
+work/
 subprojects  
 *.nds
 *.o
