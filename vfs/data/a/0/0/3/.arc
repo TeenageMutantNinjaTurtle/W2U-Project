@@ -1,2 +1,0 @@
-.arc
-compress default auto
