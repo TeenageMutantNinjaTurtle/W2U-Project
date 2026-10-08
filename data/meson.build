@@ -79,7 +79,10 @@ foreach sidecar_name, sidecar_source : sidecar_vfs_files
 endforeach
 
 # Load all of the resources.
-subdir('encounters')
+# Encounters (a/1/2/7) are owned by insistence-tools; see ../tools/ and
+# insistence-tools/crates/insistence. The TOML under data/encounters is
+# retained for reference only.
+# subdir('encounters')
 subdir('graphics')
 subdir('items')
 subdir('pml')
