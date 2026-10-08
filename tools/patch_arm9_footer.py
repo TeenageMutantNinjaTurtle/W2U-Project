@@ -5,6 +5,7 @@ from pathlib import Path
 
 
 ARM9_ROM_OFFSET_HEADER_OFFSET = 0x20
+ARM9_SIZE_HEADER_OFFSET = 0x2C
 DEFAULT_FOOTER_OFFSET = 0x0FC4
 
 
@@ -37,6 +38,14 @@ def main() -> int:
             raise ValueError(
                 f"ROM ARM9 footer offset 0x{rom_footer_offset:x} is outside {args.rom}"
             )
+        # ROMBuilder stores the staged ARM9 uncompressed and clears the
+        # compressed-end word; restoring the staged word there makes crt0
+        # try to BLZ-decompress raw code and crash. Only restore it when the
+        # ROM's ARM9 is actually compressed (smaller than the staged image).
+        rom.seek(ARM9_SIZE_HEADER_OFFSET)
+        rom_arm9_size = read_u32(rom.read(4), 0)
+        if rom_arm9_size >= len(arm9):
+            footer = b"\0\0\0\0"
         rom.seek(rom_footer_offset)
         if rom.read(4) != footer:
             rom.seek(rom_footer_offset)
