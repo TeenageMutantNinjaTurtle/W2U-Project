@@ -172,16 +172,29 @@ dsrom_base = custom_target(
   ],
 )
 
+# insistence-tools' own archives (zones, maps, scripts, text, trainers, ...)
+# are staged on top of this tree's vfs after every W2U data target has run,
+# so nothing here repacks them away again.
+insistence_stage = custom_target(
+  'insistence_stage',
+  input: [vfs_files, w2u_main_patch, w2u_battle_module_stage, pwan_runtime_patch, pmc_arm9, pmc_overlay, pmc_symbols],
+  output: 'insistence_stage.stamp',
+  build_always_stale: true,
+  command: ['sh', '-eu', '-c',
+    'cargo run --release -q --manifest-path "$1" -- --rom-dir "$2" build "$3" --vfs "$4" && touch "$5"',
+    'insistence_stage',
+    insistence_manifest,
+    meson.project_source_root() / '..' / 'IRDO_Extracted',
+    meson.project_source_root() / '..' / 'data' / 'project.toml',
+    meson.project_source_root() / 'vfs',
+    '@OUTPUT@',
+  ],
+)
+
 rom = custom_target('White2Upgrade.nds',
   output: 'White2Upgrade.nds',
   input: [
-    vfs_files,
-    w2u_main_patch,
-    w2u_battle_module_stage,
-    pwan_runtime_patch,
-    pmc_arm9,
-    pmc_overlay,
-    pmc_symbols,
+    insistence_stage,
     dsrom_base,
   ],
   command: ['sh', '-eu', '-c',
