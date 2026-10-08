@@ -34,3 +34,10 @@ option(
   value: '4g',
   description: 'Maximum Java heap passed to CTRMap ROMBuilder. Oversized ROM digest generation needs substantially more heap than the final ROM size.'
 )
+
+option(
+  'white2_base_rom',
+  type: 'string',
+  value: '../Port-Pokeweb/cleanwhite2.nds',
+  description: 'Clean US IRDO ROM that the ds-rom backend extracts and rebuilds from.'
+)

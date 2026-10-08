@@ -84,7 +84,6 @@ black2upgrade_release_artifacts = custom_target(
 
 item_icon_patch_py = find_program(meson.project_source_root() / 'tools' / 'item_icons' / 'build_item_icon_patch.py', native: true)
 patch_pmc_sysheap_py = find_program(meson.project_source_root() / 'tools' / 'patch_pmc_sysheap.py', native: true)
-patch_arm9_footer_py = meson.project_source_root() / 'tools' / 'patch_arm9_footer.py'
 
 item_icon_asset_list = run_command(
   'sh',
@@ -155,7 +154,24 @@ pmc_symbols = custom_target(
   ],
 )
   
-# The ROM itself
+# The ROM itself, assembled by insistence-tools' ds-rom backend from a
+# ds-rom extraction of the clean ROM plus this tree's vfs overlay.
+insistence_manifest = meson.project_source_root() / '..' / 'insistence-tools' / 'Cargo.toml'
+white2_clean_rom = meson.project_source_root() / get_option('white2_base_rom')
+dsrom_base = custom_target(
+  'dsrom_base',
+  input: white2_clean_rom,
+  output: 'dsrom_base.stamp',
+  command: ['sh', '-eu', '-c',
+    'cargo run --release -q --manifest-path "$1" -- rom extract --rom "$2" --out "$3" && touch "$4"',
+    'dsrom_base',
+    insistence_manifest,
+    '@INPUT@',
+    meson.project_build_root() / 'dsrom-base',
+    '@OUTPUT@',
+  ],
+)
+
 rom = custom_target('White2Upgrade.nds',
   output: 'White2Upgrade.nds',
   input: [
@@ -165,18 +181,16 @@ rom = custom_target('White2Upgrade.nds',
     pwan_runtime_patch,
     pmc_arm9,
     pmc_overlay,
-    pmc_symbols
+    pmc_symbols,
+    dsrom_base,
   ],
-  depend_files: [patch_arm9_footer_py, rom_layout_finalizer_py],
   command: ['sh', '-eu', '-c',
-    '"${JAVA:-java}" "-Xmx$6" -cp "$1" ctrmap.cli.ROMBuilder --input "$2" --output "$3"; python3 "$4" --rom "$3" --arm9 "$5"; python3 "$7" --rom "$3"',
-    'rombuilder',
-    ctrmap_jar,
-    meson.project_source_root() / 'White2Upgrade.cmproj',
+    'cargo run --release -q --manifest-path "$1" -- rom build --base "$2" --vfs "$3" --work "$4" --out "$5"',
+    'rombuild',
+    insistence_manifest,
+    meson.project_build_root() / 'dsrom-base',
+    meson.project_source_root() / 'vfs',
+    meson.project_build_root() / 'dsrom-work',
     '@OUTPUT@',
-    patch_arm9_footer_py,
-    meson.project_source_root() / 'vfs' / 'arm9.bin',
-    get_option('rombuilder_java_heap'),
-    rom_layout_finalizer_py,
   ],
 )
